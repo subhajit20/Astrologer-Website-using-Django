@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import Getadminpanel,Login
-
+from .views import GetLoginPage,Login,AdminHome
+    
 urlpatterns = [
-    path('', Getadminpanel),
-    path('login/',Login)
+    path('', GetLoginPage),
+    path('login/',Login),
+    path("adminhome/",AdminHome)
 ] 

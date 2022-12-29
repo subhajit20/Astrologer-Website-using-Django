@@ -8,7 +8,7 @@ class WebsiteUser(models.Model):
     date = models.CharField(max_length=50,editable=True)
     month = models.CharField(max_length=50,editable=True)
     year = models.CharField(max_length=50,editable=True)
-    email = models.EmailField()
+    email = models.EmailField() 
     hour = models.CharField(max_length=50,editable=True)
     minute = models.CharField(max_length=50,editable=True)
     country = models.CharField(max_length=50,editable=True)

@@ -1,0 +1,19 @@
+{% include "index.html" %}
+{% load static %}
+
+<h1>Admin Home</h1>
+
+
+<script>
+    function checkauth(){
+        let auth = localStorage.getItem("auth")
+        if(auth != null){
+            console.log(auth)
+        }else{
+            window.location.href = `/adminpanel`;
+        }
+    }
+
+    checkauth()
+
+</script>

@@ -6,6 +6,8 @@ def Sending_Emails(email_handle):
     message = 'Hi  thank you for registering in  Asltrologer Website, Go to this site to create your free kundali  :)'
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [email_handle,]
-    send_mail(subject, message, email_from, recipient_list)
-
-    return 1
+    flag = send_mail(subject, message, email_from, recipient_list)
+    if flag:
+        return True
+    else:
+        return False

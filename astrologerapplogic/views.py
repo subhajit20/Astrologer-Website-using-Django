@@ -33,24 +33,44 @@ def CreateUsers(request):
         })
 
 
+
 @csrf_protect
 @api_view(["POST"])
 def PostQuestion(request):
     serializer = QuestionSerializer(data=request.data)
-    if serializer.is_valid():
-        Question.UploadQuestion(**serializer.data)
-        Sending_Emails(serializer.data['email'])
-        return Response({
-            "msg":{
-                "flag":True,
-                "success":"Okkk"
-            }
-        })
-    else:
+    try:
+        if serializer.is_valid():
+            Question.UploadQuestion(**serializer.data)
+            flag = Sending_Emails(serializer.data['email'])
+            print(flag)
+            if flag:
+                return Response({
+                    "msg":{
+                        "flag":True,
+                        "success":"Okkk"
+                    }
+                })
+            else:
+                return Response({
+                    "msg":{
+                        "flag":True,
+                        "success":"Email has not been sent"
+                    }
+                })
+        else:
+            print(serializer.errors)
+            return Response({
+                "msg":{
+                    "flag":False,
+                    "error":serializer.errors
+                }
+            })
+    except Exception as e:
+        print(e)
         return Response({
             "msg":{
                 "flag":False,
-                "error":serializer.errors
+                "error":e
             }
         })
 
