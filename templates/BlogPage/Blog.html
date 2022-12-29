@@ -1,0 +1,36 @@
+{% include "../index.html" %}
+{% include "../Navbar.html" %}
+<div style="background: linear-gradient(to bottom right, #ff00e1, #fa2100);display: flex;">
+  <div class="p-5"id='card_container' style="display: flex-col;justify-content: center;margin: auto;">
+    
+    
+</div>
+</div>
+{% include "../ContactUs.html" %}
+{% include "../Footer.html" %}
+
+
+<script>
+    const card_container = document.getElementById("card_container");
+    async function getallblogs(){
+      let res = await fetch("http://127.0.0.1:8000/ast/b1");
+  
+      let data = await res.json();
+  
+      let html = ``;
+      if(data.msg.status === true){
+        data.msg.blogs.map((blogs)=>{
+            html += `<div class="card m-5" style="width: 28rem;">
+                        <img class="card-img-top" src="../media/${blogs.blogimg}" alt="Card image cap">
+                        <div class="card-body">
+                        <h5 class="card-title">Title : ${blogs.blogname}</h5>
+                        <p class="card-text">Description : ${blogs.blogdesc}</p>
+                        </div>
+                    </div>`
+        });
+        card_container.innerHTML = html;
+      }
+    }
+  
+    getallblogs()
+  </script>

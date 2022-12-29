@@ -1,0 +1,81 @@
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <form action="" method="post">
+        <div class="mb-3 container">
+          <p id="errormessage"></p>
+           <label for="exampleFormControlInput1" class="form-label">Email address</label>
+           <input type="email" name="email" class="email form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+         </div>
+         <div class="mb-3 container">
+           <label for="exampleFormControlTextarea1" class="form-label">Write Your Question Here</label>
+           <textarea class="question form-control" name="question" id="exampleFormControlTextarea1" rows="3"></textarea>
+       </div>
+       <div>
+           <div class="spinner-border text-dark" id="loading" role="status">
+             <span class="visually-hidden">Loading...</span>
+           </div>
+           <button type="button" class="close btn btn-secondary align-self-center" data-bs-dismiss="modal">Close</button>
+           <button type="submit" class="consult btn btn-primary align-self-center">Consult Now</button>
+       </div>
+      </form>
+      </div>
+    </div>
+  </div>
+<script>
+     const email = document.querySelector(".email");
+     const question = document.querySelector(".question");
+     const loading = document.getElementById("loading");
+     const close = document.querySelector(".close");
+     const message = document.querySelector('#errormessage')
+     loading.style.display = 'none';
+     const consult = document.querySelector(".consult");
+
+     consult.addEventListener("click",async (e)=>{
+      e.preventDefault();
+      loading.style.display = 'block';
+      consult.style.display = 'none';
+      close.style.display = 'none';
+
+      let res = await fetch("http://127.0.0.1:8000/ast/p1/",{
+        method:"POST",
+        body:JSON.stringify({
+          email:email.value,
+          question:question.value
+        }),
+        headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+      });
+      
+      let data = await res.json();
+      let html = ``;
+      if(data.msg.flag == true){
+        loading.style.display = 'none';
+        consult.style.display = 'block';
+        close.style.display = 'block';
+
+        html = `<div class="alert alert-success" role="alert">
+                            Your question has been submitted ...
+                          </div>`;
+        message.innerHTML = html;
+
+        setTimeout(()=>{
+          message.innerHTML = '';
+        },2000)
+      }else{
+        console.log(data)
+        loading.style.display = 'none';
+        close.style.display = 'block';
+        consult.style.display = 'block';
+
+        html = `<div class="alert alert-danger" role="alert">
+                            Please Fill the form Correctly...
+                          </div>`;
+        message.innerHTML = html;
+
+        setTimeout(()=>{
+          message.innerHTML = '';
+        },2000)
+      }
+     })
+
+</script>

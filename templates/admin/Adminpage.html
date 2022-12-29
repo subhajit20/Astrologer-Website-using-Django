@@ -1,0 +1,19 @@
+{% include "index.html" %}
+{% include "Navbar.html" %}
+{% load static %}
+<div class="container">
+    {% include "Loginform.html" %}
+</div>
+
+<script>
+    async function getusers(){
+        let res = await fetch("http://127.0.0.1:8000/adminpanel/login/",{
+        method:"POST",
+        headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+      });
+      
+      let data = await res.json();
+      console.log(data)
+    }
+    getusers()
+</script>
