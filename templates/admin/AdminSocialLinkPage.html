@@ -1,0 +1,114 @@
+{% include "index.html" %}
+{% include "AdminNavbar.html" %}
+<div class="container mt-5">
+    <p class="error"></p>
+    <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Socialmedia Name</label>
+          <input type="email" name="socialmedianame" class="form-control socialmedianame" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Link</label>
+          <input type="text" name="link" class="form-control link" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3 create_link">Create Link</button>
+      </form>
+</div>
+
+<div class="container mt-5">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Socialmedianame</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody id="linkstable">
+    
+        </tbody>
+      </table>
+</div>
+
+<script>
+    function checkauth(){
+        let auth = localStorage.getItem("auth")
+        if(auth != null){
+            console.log(auth)
+        }else{
+            window.location.href = `/adminpanel`;
+        }
+    }
+    checkauth()
+
+    const socialmedianame = document.querySelector(".socialmedianame")
+    const link = document.querySelector(".link")
+    const error = document.querySelector(".error")   
+
+    async function createLinks(e){
+        e.preventDefault()
+        let res = await fetch("http://127.0.0.1:8000/ast/sl/",{
+            method:"POST",
+            headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+            body:JSON.stringify({
+                socialmedianame:socialmedianame.value,
+                link:link.value
+            })
+        });
+
+        let data = await res.json();
+
+        let html = ``;
+        if(data.msg.status){
+            error.innerHTML =  `<div class="alert alert-secondary" role="alert">
+                                You have successfully Created Link
+                            </div>`
+
+            setTimeout(()=>{    
+                error.innerHTML = '';
+            },1000)
+
+        }else{
+            error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Invalid name and link
+                            </div>`
+
+            setTimeout(()=>{    
+                error.innerHTML = '';
+            },1000)
+        }
+    }
+
+    const create_link = document.querySelector(".create_link");
+
+    create_link.addEventListener("click",createLinks);
+
+
+    /**
+     * Get Social Media Links
+    */
+
+    const linkstable = document.getElementById("linkstable");
+    async function getsocialmedialinks(){
+        let res = await fetch("http://127.0.0.1:8000/ast/l1");
+
+        let data = await res.json();
+
+        let html = ``;
+        if(data.msg.status){
+            data.msg.links.map((link)=>{
+                html += `<tr>
+                            <th scope="row">${link.socialId}</th>
+                            <td>${link.socialmedianame}</td>
+                            <td>${link.link}</td>
+                        </tr>`;
+            });
+
+            linkstable.innerHTML = html;
+
+        }else{
+        linkslist.innerHTML = "No Links";
+        }
+    }
+    getsocialmedialinks()
+</script>

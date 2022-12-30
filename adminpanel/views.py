@@ -54,3 +54,6 @@ def Login(request):
 
 def AdminHome(request):
     return render(request,"admin/AdminHome.html")
+
+def Social_Links(request):
+    return render(request,"admin/AdminSocialLinkPage.html")

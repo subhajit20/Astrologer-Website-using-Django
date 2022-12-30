@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import WebsiteUser,Question
+from .models import WebsiteUser,Question,SocialLinks
 
 class WebsiteUserSerailizer(serializers.ModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class WebsiteUserSerailizer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
+        fields = "__all__"
+    
+class SocialLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialLinks
         fields = "__all__"

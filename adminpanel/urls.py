@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import GetLoginPage,Login,AdminHome
+from .views import GetLoginPage,Login,AdminHome,Social_Links
     
 urlpatterns = [
     path('', GetLoginPage),
     path('login/',Login),
-    path("adminhome/",AdminHome)
+    path("adminhome/",AdminHome),
+    path("Social-Links/",Social_Links)
 ] 

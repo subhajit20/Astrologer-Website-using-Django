@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializer import WebsiteUserSerailizer,QuestionSerializer
+from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer
 from django.views.decorators.csrf import csrf_protect
 from .models import WebsiteUser,Question,SocialLinks,Blog
 from .task import Sending_Emails
@@ -125,5 +125,34 @@ def Getalllinks(request):
             "msg":{
                 "flag":False,
                 "error":"No links are there..."
+            }
+        })
+
+@api_view(["POST"])
+def CreateLinks(request):
+    try:
+        serializer = SocialLinkSerializer(data=request.data)
+        if serializer.is_valid():
+            newlink = SocialLinks.objects.create(socialmedianame=serializer.data["socialmedianame"],link=serializer.data["link"])
+            newlink.save()
+
+            return Response({
+                "msg":{
+                    "status":True,
+                    "links":"Link has been created succefully..."
+                }
+            })
+        else:
+            return Response({
+                "msg":{
+                    "flag":False,
+                    "error":serializer.errors
+                }
+            })
+    except Exception as e:
+        return Response({
+            "msg":{
+                "flag":False,
+                "error":"Invalid name and link..."
             }
         })
