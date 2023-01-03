@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer
+from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer,DeleteQuestionSerializer,DeleteLinkSerializer
 from django.views.decorators.csrf import csrf_protect
 from .models import WebsiteUser,Question,SocialLinks,Blog
 from .task import Sending_Emails
@@ -154,5 +154,91 @@ def CreateLinks(request):
             "msg":{
                 "flag":False,
                 "error":"Invalid name and link..."
+            }
+        })
+
+
+# Get all questions views
+@api_view(["GET"])
+def Getallquestions(request):
+    try:
+        question = Question.objects.all().values()
+        if len(question) > 0:
+            return Response({
+                "msg":{
+                    "status":True,
+                    "links":question
+                }
+            })
+        else:
+            return Response({
+                "msg":{
+                    "flag":False,
+                    "error":"No links are there..."
+                }
+            })
+    except Exception as e:
+        return Response({
+            "msg":{
+                "flag":False,
+                "error":"No links are there..."
+            }
+        })
+
+# Delete a questions - views
+@api_view(["POST"])
+def DeleteAquestions(request):
+    try:
+        serializer = DeleteQuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            Question.objects.filter(id=serializer.data["id"]).delete()
+            return Response({
+                "msg":{
+                    "status":True,
+                    "links":"Question is Deleted"
+                }
+            })
+        else:
+            return Response({
+                "msg":{
+                    "flag":False,
+                    "error":serializer.errors
+                }
+            })
+    except Exception as e:
+        print(e)
+        return Response({
+            "msg":{
+                "flag":False,
+                "error":"Soemthing went wrong..."
+            }
+        })
+
+# Delete a questions - views
+@api_view(["POST"])
+def DeleteAlink(request):
+    try:
+        serializer = DeleteLinkSerializer(data=request.data)
+        if serializer.is_valid():
+            SocialLinks.objects.filter(id=serializer.data["id"]).delete()
+            return Response({
+                "msg":{
+                    "status":True,
+                    "links":"Link is is Deleted"
+                }
+            })
+        else:
+            return Response({
+                "msg":{
+                    "flag":False,
+                    "error":serializer.errors
+                }
+            })
+    except Exception as e:
+        print(e)
+        return Response({
+            "msg":{
+                "flag":False,
+                "error":"Soemthing went wrong..."
             }
         })

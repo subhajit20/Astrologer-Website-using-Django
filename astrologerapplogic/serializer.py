@@ -15,3 +15,9 @@ class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLinks
         fields = "__all__"
+
+class DeleteQuestionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+class DeleteLinkSerializer(serializers.Serializer):
+    id = serializers.IntegerField()

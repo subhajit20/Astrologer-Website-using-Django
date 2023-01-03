@@ -7,7 +7,7 @@
     function checkauth(){
         let auth = localStorage.getItem("auth")
         if(auth != null){
-            console.log(auth)
+            console.log("Authenticated")
         }else{
             window.location.href = `/adminpanel`;
         }

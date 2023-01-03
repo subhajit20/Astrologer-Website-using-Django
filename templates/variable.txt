@@ -1,0 +1,1 @@
+Contact us Api route = http://astrovastureport.com/ask-yourastroger/ast/p1/

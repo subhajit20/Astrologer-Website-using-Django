@@ -1,0 +1,122 @@
+{% include "index.html" %}
+{% include "AdminNavbar.html" %}
+<!-- Button trigger modal -->
+
+<p class="error"></p>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          Do yount to delete these question ? 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteQuestion">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="container mt-5">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Email Handle</th>
+            <th scope="col">Question</th>
+            <th scope="col"><button>DeleteThis Question</button></th>
+          </tr>
+        </thead>
+        <tbody id="questionstable">
+    
+        </tbody>
+      </table>
+</div>
+
+<script>
+    function checkauth(){
+        let auth = localStorage.getItem("auth")
+        if(auth != null){
+            console.log("Authenticated")
+        }else{
+            window.location.href = `/adminpanel`;
+        }
+    }
+    checkauth();
+
+    const questionstable = document.getElementById("questionstable");
+    async function getsocialmedialinks(){
+        let res = await fetch("http://127.0.0.1:8000/ast/q1");
+
+        let data = await res.json();
+
+        let html = ``;
+        if(data.msg.status){
+            data.msg.links.map((question)=>{
+                html += `<tr>
+                            <th scope="row">${question.id}</th>
+                            <td>${question.email}</td>
+                            <td>${question.question}</td>
+                            <td scope="col"><button type="button" id="button${question.id}" onclick="getquestionid(${question.id})" class="btn btn-primary" data-bs-toggle="modal"        data-bs-target="#exampleModal">
+                                Delete
+                            </button></td>
+                        </tr>`;
+            });
+
+            questionstable.innerHTML = html;
+
+        }else{
+            questionstable.innerHTML = "No Questions are there";
+        }
+    }
+    getsocialmedialinks();
+
+    /**
+     * Question deleteing modal
+    */
+    const myModal = document.getElementById('myModal')
+    const myInput = document.getElementById('myInput')
+    const error = document.querySelector(".error")   
+
+
+    // myModal.addEventListener('shown.bs.modal', () => {
+    //     myInput.focus()
+    // });
+
+    var questionID;
+    const deletebutton = document.getElementById("deleteQuestion");
+    
+    async function deletingquestion(e){
+        let res = await fetch("http://127.0.0.1:8000/ast/q2/",{
+            method:"POST",
+            headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+            body:JSON.stringify({
+                id:questionID
+            })
+        });
+
+        let data = await res.json();
+        if(data.status){
+          error.innerHTML =  `<div class="alert alert-success" role="alert">
+                                Question is deleted successfully...
+                                Please Wait!
+                            </div>`;
+          setTimeout(()=>{
+            window.location.reload();
+          },2000)
+        }else{
+          error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Question is not deleted successfully...
+                                Please Wait!
+                            </div>`
+        }
+    }
+    function getquestionid(id){
+        console.log(id)
+        questionID = id
+    }
+    
+
+    deletebutton.addEventListener("click",deletingquestion)
+</script>
