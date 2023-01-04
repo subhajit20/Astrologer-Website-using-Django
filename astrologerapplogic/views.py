@@ -42,7 +42,6 @@ def PostQuestion(request):
         if serializer.is_valid():
             Question.UploadQuestion(**serializer.data)
             flag = Sending_Emails(serializer.data['email'])
-            print(flag)
             if flag:
                 return Response({
                     "msg":{
@@ -220,7 +219,7 @@ def DeleteAlink(request):
     try:
         serializer = DeleteLinkSerializer(data=request.data)
         if serializer.is_valid():
-            SocialLinks.objects.filter(id=serializer.data["id"]).delete()
+            SocialLinks.objects.filter(socialId=serializer.data["id"]).delete()
             return Response({
                 "msg":{
                     "status":True,

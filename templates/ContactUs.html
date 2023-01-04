@@ -37,13 +37,13 @@
       consult.style.display = 'none';
       close.style.display = 'none';
 
-      let res = await fetch("http://astrovastureport.com/ask-yourastroger/ast/p1/",{
+      let res = await fetch("http://127.0.0.1:8000/ast/p1/",{
         method:"POST",
+        headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
         body:JSON.stringify({
           email:email.value,
           question:question.value
         }),
-        headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
       });
       
       let data = await res.json();

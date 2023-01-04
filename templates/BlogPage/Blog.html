@@ -14,9 +14,11 @@
     const card_container = document.getElementById("card_container");
     async function getallblogs(){
       let res = await fetch("http://127.0.0.1:8000/ast/b1");
+
   
       let data = await res.json();
-  
+
+
       let html = ``;
       if(data.msg.status === true){
         data.msg.blogs.map((blogs)=>{

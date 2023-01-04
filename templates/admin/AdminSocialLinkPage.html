@@ -1,5 +1,21 @@
 {% include "index.html" %}
 {% include "AdminNavbar.html" %}
+<p class="error"></p>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          Do yount to delete these question ? 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteLink">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 <div class="container mt-5">
     <p class="error"></p>
     <form>
@@ -22,6 +38,8 @@
             <th scope="col">Id</th>
             <th scope="col">Socialmedianame</th>
             <th scope="col">Link</th>
+            <th scope="col"><button>Delete This Link</button></th>
+
           </tr>
         </thead>
         <tbody id="linkstable">
@@ -100,15 +118,61 @@
                 html += `<tr>
                             <th scope="row">${link.socialId}</th>
                             <td>${link.socialmedianame}</td>
-                            <td>${link.link}</td>
+                            <td><a href="${link.link}" />${link.link}</td>
+                            <td scope="col"><button type="button" id="button${link.socialId}" onclick="getlinkid(${link.socialId})" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Delete
+                            </button></td>
                         </tr>`;
             });
 
             linkstable.innerHTML = html;
 
         }else{
-        linkslist.innerHTML = "No Links";
+            linkstable.innerHTML = "No Links are there...";
         }
     }
-    getsocialmedialinks()
+    getsocialmedialinks();
+
+
+    var linkID;
+    const deletelinkbutton = document.getElementById("deleteLink");
+    
+    async function deletingLink(e){
+        e.preventDefault()
+        let res = await fetch("http://127.0.0.1:8000/ast/s2/",{
+            method:"POST",
+            headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+            body:JSON.stringify({
+                id:linkID
+            })
+        });
+
+        let data = await res.json();
+
+        if(data.msg.status){
+          error.innerHTML =  `<div class="alert alert-success" role="alert">
+                                Link is deleted successfully...
+                                Please Wait!
+                            </div>`;
+          setTimeout(()=>{
+            error.innerHTML = ''
+            window.location.reload();
+          },2000)
+        }else{
+          error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Link is not deleted successfully...
+                                Please Wait!
+                            </div>`;
+        
+        setTimeout(()=>{
+            error.innerHTML = ''
+          },2000)
+        }
+    }
+    function getlinkid(id){
+        linkID = id
+    }
+    
+
+    deletelinkbutton.addEventListener("click",deletingLink)
 </script>
