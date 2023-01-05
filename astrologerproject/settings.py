@@ -67,16 +67,17 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
+
 CORS_ORIGIN_ALLOW_ALL = True
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://example.com",
-#     "https://sub.example.com", 
-#     "http://127.0.0.1:9000",
-#     "http://127.0.0.1:8000",
-#     "http://127.0.0.1:5500",    
-#     "http://astrovastureport.com"
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com", 
+    "http://127.0.0.1:9000",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:5500",    
+    "http://astrovastureport.com"
+]
 
 CORS_ALLOW_METHODS = [
     "DELETE",
