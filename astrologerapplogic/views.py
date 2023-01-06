@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer,DeleteQuestionSerializer,DeleteLinkSerializer
+from rest_framework.decorators import api_view,permission_classes,parser_classes,APIView
+from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer,DeleteQuestionSerializer,DeleteLinkSerializer,BlogSerializer,DeleteBlogSerializer
 from django.views.decorators.csrf import csrf_protect
 from .models import WebsiteUser,Question,SocialLinks,Blog
 from .task import Sending_Emails
+from rest_framework.parsers import MultiPartParser,FormParser
 
 # Create your views here.
 @csrf_protect
@@ -240,4 +241,61 @@ def DeleteAlink(request):
                 "flag":False,
                 "error":"Soemthing went wrong..."
             }
+        })
+
+
+class UploadBlog(APIView):
+        """
+        A view that can accept POST requests with JSON content.
+        """
+        parser_classes = ( MultiPartParser, FormParser)
+
+        def post(self, request, format=None):
+            serializer = BlogSerializer(data=request.data)
+            if serializer.is_valid():
+                flag = Blog.Upload(request.FILES.get("blogimg"),**serializer.data)
+                if flag:
+                    return Response({
+                        "status":True,
+                        "msg":"File Uploaded Successfully..."
+                    })
+                else:
+                    return Response({
+                        "status":False,
+                        "msg":"Failed..."
+                    })
+            else:
+                return Response({
+                    "status":False,
+                    "msg":serializer.errors
+                })
+
+
+@api_view(["POST"])
+def DeleteBlog(request):
+    try:
+        serializer = DeleteBlogSerializer(data=request.data)
+
+        if serializer.is_valid():
+            flag = Blog.Delete(serializer.data["blogId"])
+            if flag:
+                return Response({
+                    "status":True,
+                    "msg":"Blog is deleted Succesfully..."
+                })
+            else:
+                return Response({
+                    "status":True,
+                    "msg":"Failed to Delete Blog..."
+                })
+        else:
+            return Response({
+                "status":True,
+                "msg":serializer.errors
+            })
+    except Exception as e:
+        print(e)
+        return Response({
+            "status":False,
+            "msg":"Something Went Wrong..."
         })

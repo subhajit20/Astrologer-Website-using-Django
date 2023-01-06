@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateUsers,PostQuestion,Getalllinks,GetallBlogs,CreateLinks,Getallquestions,DeleteAquestions,DeleteAlink
+from .views import CreateUsers,PostQuestion,Getalllinks,GetallBlogs,CreateLinks,Getallquestions,DeleteAquestions,DeleteAlink,UploadBlog,DeleteBlog
     
 
 urlpatterns = [
@@ -10,5 +10,7 @@ urlpatterns = [
     path("sl/",CreateLinks),
     path("s2/",DeleteAlink),
     path("q1/",Getallquestions),
-    path("q2/",DeleteAquestions)
+    path("q2/",DeleteAquestions),
+    path("uploadblog/",UploadBlog.as_view()),
+    path("deletedblog/",DeleteBlog),
 ]

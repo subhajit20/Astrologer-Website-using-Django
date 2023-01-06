@@ -60,3 +60,6 @@ def Social_Links(request):
 
 def QuestionsPage(request):
     return render(request,"admin/AdminQuestionpage.html")
+
+def Admin_Blog(request):
+    return render(request,"admin/AdminBlog.html")

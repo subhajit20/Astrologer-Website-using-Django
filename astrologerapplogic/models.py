@@ -45,3 +45,22 @@ class Blog(models.Model):
     blogname = models.CharField(max_length=200,editable=True)
     blogimg = models.FileField(upload_to='static/')
     blogdesc = models.CharField(max_length=300)
+
+    @classmethod
+    def Upload(cls,img,**krgs):
+        if krgs:
+            newblog = cls.objects.create(blogname=krgs["blogname"],blogimg=img,blogdesc=krgs["blogdesc"])
+            newblog.save()
+
+            return True
+        else:
+            return False
+    
+    @classmethod
+    def Delete(cls,id):
+        if id:
+            cls.objects.get(blogId=id).delete()
+
+            return True
+        else:
+            return False

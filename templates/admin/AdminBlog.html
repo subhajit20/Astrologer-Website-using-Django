@@ -1,0 +1,173 @@
+{% include "index.html" %}
+{% include "AdminNavbar.html" %}
+<h1 style="text-align: center;">This is admin blog page</h1>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          Do yount to delete these blog ? 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteBlog">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="container">
+<p class="error"></p>
+
+    <form enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Blog Name</label>
+          <input type="text" name="blogname" class="form-control blogname" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Upload Blog Image</label>
+            <input class="form-control blogimg" type="file" name="blogimg" id="formFile">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Blog Description</label>
+          <input type="text" name="blogdesc" class="form-control blogdesc" id="exampleInputPassword1">
+        </div>
+        <button type="submit" class="btn btn-primary blog_upload">Upload Blog</button>
+      </form>
+</div>
+<div class="container">
+    <table class="table ">
+        <thead>
+          <tr>
+            <th scope="col">Blogname</th>
+            <th scope="col">Blog Image</th>
+            <th scope="col">Blog Description</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody class="blogtable">
+          
+        </tbody>
+      </table>
+</div>
+<script>
+    function checkauth(){
+        let auth = localStorage.getItem("auth")
+        if(auth != null){
+            console.log("Authenticated")
+        }else{
+            window.location.href = `/adminpanel`;
+        }
+    }
+    checkauth()
+
+    const upload = document.querySelector(".blog_upload");
+    const blogname = document.querySelector(".blogname")
+    const blogimg = document.querySelector(".blogimg")
+    const blogdesc = document.querySelector(".blogdesc")
+    const error = document.querySelector(".error")
+
+
+    upload.addEventListener("click",async (e)=>{
+        e.preventDefault()
+
+        const formData = new FormData()
+        formData.append("blogimg",blogimg.files[0])
+        formData.append("blogname",blogname.value)
+        formData.append("blogdesc",blogdesc.value)
+        const res = await fetch("http://127.0.0.1:8000/ast/uploadblog/",{
+            method:"POST",
+            body:formData
+        });
+
+        const data = await res.json();
+        
+        if(data.status){
+            blogname.value = ''
+            blogimg.files = ''
+            blogdesc.value = ''
+            error.innerHTML =  `<div class="alert alert-success" role="alert">
+                                Link is deleted successfully...
+                                Please Wait!
+                            </div>`;
+          setTimeout(()=>{
+            error.innerHTML = ''
+          },2000)
+        }else{
+            blogname.value = ''
+            blogimg.files = ''
+            blogdesc.value = ''
+            error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Failed to upload blogs...
+                            </div>`;
+          setTimeout(()=>{
+            error.innerHTML = ''
+          },2000)
+        }
+    })
+
+
+    /**
+     * Get all blogs
+    */
+    const blogtable = document.querySelector(".blogtable");
+    async function getallblogs(){
+      let res = await fetch("http://127.0.0.1:8000/ast/b1");
+
+  
+      let data = await res.json();
+
+
+      let html = ``;
+      if(data.msg.status === true){
+        data.msg.blogs.map((blogs)=>{
+            console.log(blogs.blogimg)
+            html += `
+                    <tr>
+                        <td>${blogs.blogname}</td>
+                        <td><img style="max-width:200px" class="card-img-top" src="../../media/static/Subhajit_XcezkVq.jpg" alt="Card image cap"/></td>
+                        <td>${blogs.blogdesc}</td>
+                        <td scope="col"><button type="button" onclick="getblogid(${blogs.blogId})" class="btn btn-primary" data-bs-toggle="modal"  data-bs-target="#exampleModal">
+                                Delete
+                            </button></td>
+                    </tr>
+                    `
+        });
+        blogtable.innerHTML = html;
+      }
+    }
+  
+    getallblogs();
+
+    var blogId;
+    function getblogid(id){
+        blogId = id;
+        console.log(blogId)
+    }
+    async function deletingblog(){
+        let res = await fetch("http://127.0.0.1:8000/ast/deletedblog/",{
+            method:"POST",
+            headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
+            body:JSON.stringify({
+                blogId:blogId
+            })
+        });
+
+        let data = await res.json();
+        console.log(data)
+        if(data.status){
+          error.innerHTML =  `<div class="alert alert-success" role="alert">
+                                Blog is deleted successfully...
+                                Please Wait!
+                            </div>`;
+          setTimeout(()=>{
+            window.location.reload();
+          },2000)
+        }else{
+          error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Question is not deleted successfully...
+                                Please Wait!
+                            </div>`
+        }
+    }
+    const deleteBlog = document.getElementById("deleteBlog")
+    deleteBlog.addEventListener("click",deletingblog)
+</script>
