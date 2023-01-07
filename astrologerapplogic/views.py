@@ -1,11 +1,16 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes,parser_classes,APIView
-from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer,DeleteQuestionSerializer,DeleteLinkSerializer,BlogSerializer,DeleteBlogSerializer
+from .serializer import WebsiteUserSerailizer,QuestionSerializer,SocialLinkSerializer,DeleteQuestionSerializer,DeleteLinkSerializer,BlogSerializer,DeleteBlogSerializer,UserSerializer,DeleteUserSerializer
 from django.views.decorators.csrf import csrf_protect
 from .models import WebsiteUser,Question,SocialLinks,Blog
 from .task import Sending_Emails
 from rest_framework.parsers import MultiPartParser,FormParser
+
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import (
+    make_password
+)
 
 # Create your views here.
 @csrf_protect
@@ -293,6 +298,78 @@ def DeleteBlog(request):
                 "status":True,
                 "msg":serializer.errors
             })
+    except Exception as e:
+        print(e)
+        return Response({
+            "status":False,
+            "msg":"Something Went Wrong..."
+        })
+
+@api_view(["POST"])
+def CreateUser(request):
+    try:
+        serializer = UserSerializer(data=request.data,context=request.data)
+
+        if serializer.is_valid():
+            newpassword = make_password(serializer.data["password"])
+            newuser = User.objects.create(username=serializer.data["username"],password=newpassword)
+            newuser.save()
+            return Response({
+                "status":True,
+                "msg":"New User has been created successfully..."
+            })
+        else:
+            return Response({
+                "status":True,
+                "msg":serializer.errors
+            })
+    except Exception as e:
+        print(e)
+        return Response({
+            "status":False,
+            "msg":"Something Went Wrong..."
+        })
+
+
+@api_view(["GET"])
+def Get_ALL_User(request):
+    try:
+        users = User.objects.all().values_list("id","username","password")
+
+        if len(users) > 0:
+            return Response({
+                "status":True,
+                "data":users
+            })
+        else:
+            return Response({
+                "status":False,
+                "data":"No such users found..."
+            })
+    except Exception as e:
+        print(e)
+        return Response({
+            "status":False,
+            "msg":"Something Went Wrong..."
+        })
+
+
+@api_view(["POST"])
+def DeleteAUser(request):
+    try:
+        serializer = DeleteUserSerializer(data=request.data)
+        if serializer.is_valid():
+            User.objects.filter(id=serializer.data["id"]).delete()
+
+            return Response({
+                "status":True,
+                "msg":"User is delete succefully..."
+            })
+        else:
+            return Response({
+                    "status":False,
+                    "data":serializer.errors
+                })
     except Exception as e:
         print(e)
         return Response({

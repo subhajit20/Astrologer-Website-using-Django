@@ -23,7 +23,6 @@ def Login(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             checkuser = User.objects.filter(username=serializer.data["username"]).values_list("id","username","password")
-            print(checkuser[0][0])
             if len(checkuser) > 0:
                 isValidpassword = check_password(serializer.data["password"],checkuser[0][2]) 
                 if isValidpassword:
@@ -63,3 +62,6 @@ def QuestionsPage(request):
 
 def Admin_Blog(request):
     return render(request,"admin/AdminBlog.html")
+
+def Admin_User(request):
+    return render(request,'admin/AdminUser.html')

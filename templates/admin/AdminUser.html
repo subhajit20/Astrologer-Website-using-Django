@@ -1,0 +1,186 @@
+{% include "index.html" %}
+{% include "AdminNavbar.html" %}
+
+<h1 style="text-align: center;padding: auto;">Create Admin User</h1>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          Do yount to delete these User ? 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="deleteUser">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="container">
+    <p class="error"></p>
+    <form>
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Enter Username</label>
+          <input type="text" name="username" class="form-control username" id="exampleInputEmail1" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Password</label>
+          <input type="password" name="password" class="form-control password" id="exampleInputPassword1">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" name="confirmpassword" class="form-control confirmpassword" id="exampleInputPassword1">
+        </div>
+        <button type="submit" class="btn btn-primary create">Create</button>
+      </form>
+</div>
+
+
+<div class="container alluser">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody class="usertable">
+        </tbody>
+      </table>
+</div>
+<script>
+    function checkauth(){
+        let auth = localStorage.getItem("auth")
+        if(auth != null){
+            console.log("Authenticated")
+        }else{
+            window.location.href = `/adminpanel`;
+        }
+    }
+    checkauth()
+
+
+    /**
+     * Creating User for admin panel
+    */
+
+   const create = document.querySelector(".create");
+   const username = document.querySelector(".username");
+   const password = document.querySelector(".password");
+   const confirmpassword = document.querySelector(".confirmpassword");
+   const error = document.querySelector(".error")   
+
+
+   create.addEventListener("click",async (e)=>{
+
+        e.preventDefault()
+        const res = await fetch("http://127.0.0.1:8000/ast/createuser/",{
+            method:"POST",
+            headers:{
+                "content-type":"application/json"
+            },
+            body:JSON.stringify({
+                username:username.value,
+                password:password.value,
+                confirmpassword:confirmpassword.value
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.msg.status){
+            error.innerHTML =  `<div class="alert alert-secondary" role="alert">
+                                You have successfully Created Link
+                            </div>`
+
+            setTimeout(()=>{    
+                error.innerHTML = '';
+            },1000)
+
+        }else{
+            error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                Invalid username and Password
+                            </div>`
+
+            setTimeout(()=>{    
+                error.innerHTML = '';
+            },1000)
+        }
+   })
+
+   /**
+    * Get all user details
+   */
+   const usertable = document.querySelector(".usertable");
+    async function getAllUsers(){
+        let res = await fetch("http://127.0.0.1:8000/ast/getalluser");
+
+        let data = await res.json();
+        console.log(data.data)
+        let html = ``;
+        if(data.status){
+            data.data.map((user)=>{
+                html += `<tr>
+                            <th scope="row">${user[0]}</th>
+                            <td>${user[1]}</td>
+                            <td>${user[2]}</td>
+                            <td scope="col"><button type="button" id="button${user[0]}" onclick="getuserid(${user[0]})" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Delete
+                            </button></td>
+                        </tr>`;
+            });
+
+            usertable.innerHTML = html;
+
+        }else{
+            usertable.innerHTML = "No Users are there...";
+        }
+    }
+    getAllUsers();
+
+
+    let userid;
+    async function deletingUser(e){
+        e.preventDefault()
+        let res = await fetch("http://127.0.0.1:8000/ast/delauser/",{
+            method:"POST",
+            headers:{
+                "content-type":"application/json"
+            },
+            body:JSON.stringify({
+                id:userid
+            })
+        });
+
+        let data = await res.json();
+
+        if(data.status){
+          error.innerHTML =  `<div class="alert alert-success" role="alert">
+                                User is deleted successfully...
+                                Please Wait!
+                            </div>`;
+          setTimeout(()=>{
+            error.innerHTML = ''
+            window.location.reload();
+          },2000)
+        }else{
+          error.innerHTML =  `<div class="alert alert-danger" role="alert">
+                                User is not deleted successfully...
+                                Please Wait!
+                            </div>`;
+        
+        setTimeout(()=>{
+            error.innerHTML = ''
+          },2000)
+        }
+    }
+    
+    function getuserid(id){
+        userid = id
+    }
+
+    const deleteUser = document.getElementById("deleteUser");
+
+    deleteUser.addEventListener("click",deletingUser)
+</script>
