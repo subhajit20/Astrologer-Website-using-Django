@@ -12,6 +12,12 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = "__all__"
     
+    def validate_number(self,value):
+        if "+91" in value or len(value) == 10:
+            return value
+        else:
+            raise serializers.ValidationError("Phone Number is not Valid...")
+
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLinks

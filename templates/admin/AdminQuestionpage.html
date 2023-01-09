@@ -24,6 +24,7 @@
           <tr>
             <th scope="col">Id</th>
             <th scope="col">Email Handle</th>
+            <th scope="col">Phone Number</th>
             <th scope="col">Question</th>
             <th scope="col"><button>DeleteThis Question</button></th>
           </tr>
@@ -57,6 +58,7 @@
                 html += `<tr>
                             <th scope="row">${question.id}</th>
                             <td>${question.email}</td>
+                            <td>${question.number}</td>
                             <td>${question.question}</td>
                             <td scope="col"><button type="button" id="button${question.id}" onclick="getquestionid(${question.id})" class="btn btn-primary" data-bs-toggle="modal"        data-bs-target="#exampleModal">
                                 Delete

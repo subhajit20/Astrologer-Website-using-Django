@@ -1,0 +1,1 @@
+Replace all the local sever api call - http://127.0.0.1:8000 with main production api - http://astrovastureport.com/

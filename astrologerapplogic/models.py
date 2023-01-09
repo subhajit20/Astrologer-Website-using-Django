@@ -25,6 +25,7 @@ class WebsiteUser(models.Model):
 class Question(models.Model):
     id = models.AutoField(primary_key=True)
     email = models.EmailField()
+    number = models.CharField(max_length=200,editable=True)
     question = models.CharField(max_length=200,editable=True)
 
     @classmethod

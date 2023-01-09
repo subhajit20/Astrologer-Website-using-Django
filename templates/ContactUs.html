@@ -8,6 +8,10 @@
            <input type="email" name="email" class="email form-control" id="exampleFormControlInput1" placeholder="name@example.com">
          </div>
          <div class="mb-3 container">
+           <label for="exampleFormControlInput1" class="form-label">Phone Number</label>
+           <input type="text" name="number" class="number form-control" id="exampleFormControlInput1" placeholder="Phone Number">
+         </div>
+         <div class="mb-3 container">
            <label for="exampleFormControlTextarea1" class="form-label">Write Your Question Here</label>
            <textarea class="question form-control" name="question" id="exampleFormControlTextarea1" rows="3"></textarea>
        </div>
@@ -25,6 +29,7 @@
 <script>
      const email = document.querySelector(".email");
      const question = document.querySelector(".question");
+     const number = document.querySelector(".number");
      const loading = document.getElementById("loading");
      const close = document.querySelector(".close");
      const message = document.querySelector('#errormessage')
@@ -42,11 +47,14 @@
         headers: { "X-CSRFToken": '{{csrf_token}}','content-type':'application/json' },
         body:JSON.stringify({
           email:email.value,
-          question:question.value
+          question:question.value,
+          number:number.value
         }),
       });
       
       let data = await res.json();
+
+
       let html = ``;
       if(data.msg.flag == true){
         loading.style.display = 'none';
@@ -62,7 +70,6 @@
           message.innerHTML = '';
         },2000)
       }else{
-        console.log(data)
         loading.style.display = 'none';
         close.style.display = 'block';
         consult.style.display = 'block';
